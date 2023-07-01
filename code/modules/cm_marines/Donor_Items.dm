@@ -6,8 +6,8 @@
 /obj/item/clothing/suit/storage/marine/fluff
 	name = "ITEM NAME"
 	desc = "ITEM DESCRIPTION.  DONOR ITEM" //Add UNIQUE if Unique
-	icon_state = "state"
-	item_state = "state"
+	icon_state = null
+	item_state = null
 	flags_atom = NO_NAME_OVERRIDE
 	//DON'T GRAB STUFF BETWEEN THIS LINE
 	icon = 'icons/obj/items/clothing/suits.dmi'
@@ -348,21 +348,22 @@
 	desc = "Powered by the magic of FRIENDSHIP. (Can be toggled opened or closed)  UNIQUE DONOR ITEM"
 	icon_state = "AlexLermire_u"
 	item_state = "AlexLermire_u"
-	var/open = 0
+	var/open = FALSE
+
 /obj/item/clothing/suit/storage/marine/fluff/AlexLemire/verb/verb_toggleopen()
 	set src in usr
 	set category = "Object"
 	set name = "Toggle Open"
-	if(open ==0)
+	if(!open)
 		icon_state = "AlexLermire_on_u"
 		item_state = "AlexLermire_on_u"
-		open = 1
+		open = TRUE
 	else
-		open = 0
+		open = FALSE
 		icon_state = "AlexLermire_u"
 		item_state = "AlexLermire_u"
 	update_icon()
-	return
+	usr.update_inv_wear_suit()
 
 /obj/item/clothing/suit/storage/marine/fluff/titus
 	name = "ODST Armor"
@@ -387,6 +388,22 @@
 	desc = "You can't take the sky from me...  DONOR ITEM"
 	icon_state = "Eonoc_coat"
 	item_state = "Eonoc_coat"
+	var/open = FALSE
+
+/obj/item/clothing/suit/storage/marine/fluff/eonoc/verb/verb_toggleopen()
+	set src in usr
+	set category = "Object"
+	set name = "Toggle Open"
+	if(!open)
+		icon_state = "Eonoc_coat_o"
+		item_state = "Eonoc_coat_o"
+		open = TRUE
+	else
+		open = FALSE
+		icon_state = "Eonoc_coat"
+		item_state = "Eonoc_coat"
+	update_icon()
+	usr.update_inv_wear_suit()
 
 /obj/item/clothing/suit/storage/marine/fluff/kaila
 	name = "Custom Engineering Armor"
@@ -427,21 +444,21 @@
 
 
 
-//	HELMETS/HATS/BERETS COSMETICS  ////////////////////////////////////////////////
+// HELMETS/HATS/BERETS COSMETICS  ////////////////////////////////////////////////
 
 //HEAD TEMPLATE (for Helmets/Hats/Berets)  ONLY TAKE NAME, DESC, ICON_STATE, AND ITEM_STATE.  Make a copy of those, and put the ckey of the person at the end after fluff
 /obj/item/clothing/head/helmet/marine/fluff
 	name = "ITEM NAME"
 	desc = "ITEM DESCRIPTION.  DONOR ITEM" //Add UNIQUE if Unique
-	icon_state = "state"
-	item_state = "state"
+	icon_state = null
+	item_state = null
 	//DON'T GRAB STUFF BETWEEN THIS LINE
 	icon = 'icons/obj/items/clothing/hats.dmi'
 	icon_override = 'icons/mob/humans/onmob/head_0.dmi'
 	flags_inventory = BLOCKSHARPOBJ
 	flags_inv_hide = HIDEEARS
 	flags_atom = NO_NAME_OVERRIDE
-	min_cold_protection_temperature = ICE_PLANET_min_cold_protection_temperature
+	min_cold_protection_temperature = ICE_PLANET_MIN_COLD_PROT
 	flags_marine_helmet = NO_FLAGS
 
 /obj/item/clothing/head/helmet/marine/fluff/verb/toggle_squad_markings()
@@ -535,7 +552,7 @@
 
 /obj/item/clothing/head/helmet/marine/fluff/biolock
 	name = "Medic Helmet"
-	desc = "Medical Helmet designed to protect the head of a medic.. DONOR ITEM"
+	desc = "Medical Helmet designed to protect the head of a medic. DONOR ITEM"
 	icon_state = "helmetm"
 
 /obj/item/clothing/head/helmet/marine/fluff/haveatya
@@ -667,7 +684,7 @@
 	item_state = "camo_helm"
 
 /obj/item/clothing/head/helmet/marine/fluff/dino
-	name = "Snake's Bandanna"
+	name = "Snake's Bandana"
 	desc = "Property of The Boss.  DONOR ITEM"
 	icon_state = "snakeheadband"
 	item_state = "snakeheadband"
@@ -862,16 +879,16 @@
 	item_state = "killaninja12_u"
 
 
-//	UNIFORM/JUMPSUIT COSMETICS  ////////////////////////////////////////////////
+// UNIFORM/JUMPSUIT COSMETICS  ////////////////////////////////////////////////
 
 //UNIFORM TEMPLATE (for uniforms/jumpsuits)  ONLY TAKE NAME, DESC, ICON_STATE, ITEM_STATE,  AND ITEM_COLOR.  Make a copy of those, and put the ckey of the person at the end after fluff
 /obj/item/clothing/under/marine/fluff
 	name = "ITEM NAME"
 	desc = "ITEM DESCRIPTION.  DONOR ITEM" //Add UNIQUE if Unique
 	flags_atom = NO_NAME_OVERRIDE
-	icon_state = "state"
+	icon_state = null
 	item_state = null
-	min_cold_protection_temperature = ICE_PLANET_min_cold_protection_temperature
+	min_cold_protection_temperature = ICE_PLANET_MIN_COLD_PROT
 	//DON'T GRAB STUFF BETWEEN THIS LINE
 	//AND THIS LINE
 //END UNIFORM TEMPLATE
@@ -1148,14 +1165,14 @@
 	flags_jumpsuit = FALSE
 
 
-//	MASK COSMETICS  ////////////////////////////////////////////////
+// MASK COSMETICS  ////////////////////////////////////////////////
 
 //MASK TEMPLATE (for masks)  ONLY TAKE NAME, DESC, ICON_STATE, ITEM_STATE,  AND ITEM_COLOR.  Make a copy of those, and put the ckey of the person at the end after fluff
 /obj/item/clothing/mask/fluff
 	name = "ITEM NAME"
 	desc = "ITEM DESCRIPTION.  DONOR ITEM" //Add UNIQUE if Unique
-	icon_state = "state"
-	item_state = "state"
+	icon_state = null
+	item_state = null
 	//DON'T GRAB STUFF BETWEEN THIS LINE
 	flags_inventory = ALLOWREBREATH
 	flags_inv_hide = HIDEEARS|HIDEEYES|HIDEFACE
@@ -1237,19 +1254,19 @@
 /obj/item/clothing/mask/fluff/lostmix
 	name = "Phantom Cigar"
 	desc = "It's a g-g-g-g-g-ghost cigar.  DONOR ITEM" //Add UNIQUE if Unique
-	icon_state = "cigaron"
-	item_state = "cigaron"
+	icon_state = "cigar_on"
+	item_state = "cigar_on"
 	flags_inventory = ALLOWREBREATH
 	flags_inv_hide = HIDEFACE
 
-//	BOOTS/SHOES COSMETICS  ////////////////////////////////////////////////
+// BOOTS/SHOES COSMETICS  ////////////////////////////////////////////////
 
 //FEET TEMPLATE (for masks)  ONLY TAKE NAME, DESC, ICON_STATE, ITEM_STATE,  AND ITEM_COLOR.  Make a copy of those, and put the ckey of the person at the end after fluff
 /obj/item/clothing/shoes/marine/fluff
 	name = "ITEM NAME"
 	desc = "ITEM DESCRIPTION.  DONOR ITEM" //Add UNIQUE if Unique
-	icon_state = "state"
-	item_state = "state"
+	icon_state = null
+	item_state = null
 //END FEET TEMPLATE
 
 /obj/item/clothing/shoes/marine/fluff/Vintage
@@ -1275,8 +1292,8 @@
 /obj/item/clothing/gloves/marine/fluff   //MARINE GLOVES TEMPLATE
 	name = "ITEM NAME"
 	desc = "ITEM DESCRIPTION.  DONOR ITEM" //Add UNIQUE if Unique
-	icon_state = "state"
-	item_state = "state"
+	icon_state = null
+	item_state = null
 
 /obj/item/clothing/glasses/fluff
 	flags_inventory = COVEREYES
@@ -1309,6 +1326,8 @@
 	desc = "Black gloves, favored by Special Operations teams.  DONOR ITEM"
 	name = "Black Ops Black Gloves"
 
+/obj/item/storage/backpack/marine/fluff
+	xeno_types = null
 
 /obj/item/storage/backpack/marine/fluff/Sado
 	name = "Tanya's Backpack"
@@ -1328,11 +1347,11 @@
 	icon_state = "sun"
 	item_state = "sun"
 
-obj/item/clothing/gloves/marine/fluff/jedijas
+/obj/item/clothing/gloves/marine/fluff/jedijas
 	name = "Fists of Mandalore"
 	desc = "If Mandalore was a person, these would be it's fists...  DONOR ITEM"
-	icon_state = "marine-white"
-	item_state = "marine-wgloves"
+	icon_state = "marine_white"
+	item_state = "marine_wgloves"
 
 /obj/item/storage/belt/marine/fluff/swordbelt
 	name = "Omega Sword Belt"
@@ -1350,9 +1369,9 @@ obj/item/clothing/gloves/marine/fluff/jedijas
 /obj/item/clothing/mask/cigarette/fluff/ghost
 	name = "XXX's custom Cigar"
 	desc = "A custom rolled giant, made specifically for John Donable in the best, hottest, and most abusive of Cuban sweat shops.  UNIQUE DONOR ITEM."
-	icon_state = "cigar2off"
-	icon_on = "cigar2on"
-	icon_off = "cigar2off"
+	icon_state = "cigar2_off"
+	icon_on = "cigar2_on"
+	icon_off = "cigar_2off"
 	smoketime = 7200
 	chem_volume = 30
 	flags_inventory = COVERMOUTH|ALLOWREBREATH

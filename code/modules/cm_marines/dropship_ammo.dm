@@ -26,7 +26,7 @@
 	/// How many tiles the ammo can deviate from the laser target
 	var/accuracy_range = 3
 	/// Sound played mere seconds before impact
-	var/warning_sound = 'sound/machines/hydraulics_2.ogg'
+	var/warning_sound = 'sound/effects/rocketpod_fire.ogg'
 	/// Volume of the sound played before impact
 	var/warning_sound_volume = 70
 	/// Ammunition expended each time this is fired
@@ -39,6 +39,15 @@
 	var/mob/source_mob
 	var/combat_equipment = TRUE
 
+/obj/structure/ship_ammo/attack_alien(mob/living/carbon/xenomorph/current_xenomorph)
+	if(unslashable) 
+		return XENO_NO_DELAY_ACTION
+	current_xenomorph.animation_attack_on(src)
+	playsound(src, 'sound/effects/metalhit.ogg', 25, 1)
+	current_xenomorph.visible_message(SPAN_DANGER("[current_xenomorph] slashes at [src]!"),
+	SPAN_DANGER("You slash at [src]!"), null, 5, CHAT_TYPE_XENO_COMBAT)
+	update_health(rand(current_xenomorph.melee_damage_lower, current_xenomorph.melee_damage_upper))
+	return XENO_ATTACK_ACTION
 
 /obj/structure/ship_ammo/attackby(obj/item/I, mob/user)
 	if(istype(I, /obj/item/powerloader_clamp))
@@ -81,7 +90,7 @@
 /obj/structure/ship_ammo/proc/can_fire_at(turf/impact, mob/user)
 	return TRUE
 
-/obj/structure/ship_ammo/proc/transfer_ammo(var/obj/structure/ship_ammo/target, var/mob/user)
+/obj/structure/ship_ammo/proc/transfer_ammo(obj/structure/ship_ammo/target, mob/user)
 	if(type != target.type)
 		to_chat(user, SPAN_NOTICE("\The [src] and \the [target] use incompatible types of ammunition!"))
 		return
@@ -405,18 +414,22 @@
 	max_ammo_count = 1
 	ammo_name = "area denial sentry"
 	travelling_time = 0 // handled by droppod
-	point_cost = 600
+	point_cost = 800
 	accuracy_range = 0 // pinpoint
 	max_inaccuracy = 0
+	/// Special structures it needs to break with drop pod
+	var/list/breakeable_structures = list(/obj/structure/barricade, /obj/structure/surface/table)
 
 /obj/structure/ship_ammo/sentry/detonate_on(turf/impact)
 	var/obj/structure/droppod/equipment/sentry/droppod = new(impact, /obj/structure/machinery/defenses/sentry/launchable, source_mob)
+	droppod.special_structures_to_damage = breakeable_structures
+	droppod.special_structure_damage = 500
 	droppod.drop_time = 5 SECONDS
 	droppod.launch(impact)
 	qdel(src)
 
 /obj/structure/ship_ammo/sentry/can_fire_at(turf/impact, mob/user)
-	for(var/obj/structure/machinery/defenses/def in urange(2, impact))
+	for(var/obj/structure/machinery/defenses/def in urange(4, impact))
 		to_chat(user, SPAN_WARNING("The selected drop site is too close to another deployed defense!"))
 		return FALSE
 	if(istype(impact, /turf/closed))

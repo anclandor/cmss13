@@ -1,7 +1,7 @@
 /*
 /turf
 
-	/open - all turfs with density = 0 are turf/open
+	/open - all turfs with density = FALSE are turf/open
 
 		/floor - floors are constructed floor as opposed to natural grounds
 
@@ -11,7 +11,7 @@
 
 		/snow - snow is one type of non-floor open turf
 
-	/closed - all turfs with density = 1 are turf/closed
+	/closed - all turfs with density = TRUE are turf/closed
 
 		/wall - walls are constructed walls as opposed to natural solid turfs
 
@@ -52,6 +52,9 @@
 	/// Whether we've broken through the ceiling yet
 	var/ceiling_debrised = FALSE
 
+	// Fishing
+	var/supports_fishing = FALSE // set to false when MRing, this is just for testing
+
 /turf/Initialize(mapload)
 	SHOULD_CALL_PARENT(FALSE) // this doesn't parent call for optimisation reasons
 	if(flags_atom & INITIALIZED)
@@ -83,7 +86,7 @@
 		Entered(AM)
 
 	if(luminosity)
-		if(light)	WARNING("[type] - Don't set lights up manually during New(), We do it automatically.")
+		if(light) WARNING("[type] - Don't set lights up manually during New(), We do it automatically.")
 		trueLuminosity = luminosity * luminosity
 		light = new(src)
 
@@ -109,6 +112,11 @@
 	visibilityChanged()
 	flags_atom &= ~INITIALIZED
 	..()
+
+/turf/vv_get_dropdown()
+	. = ..()
+	VV_DROPDOWN_OPTION(VV_HK_EXPLODE, "Trigger Explosion")
+	VV_DROPDOWN_OPTION(VV_HK_EMPULSE, "Trigger EM Pulse")
 
 /turf/ex_act(severity)
 	return 0
@@ -237,6 +245,7 @@
 	if(!istype(A))
 		return
 
+	SEND_SIGNAL(src, COMSIG_TURF_ENTERED, A)
 	SEND_SIGNAL(A, COMSIG_MOVABLE_TURF_ENTERED, src)
 
 	// Let explosions know that the atom entered
@@ -257,13 +266,13 @@
 	return 0
 /turf/proc/is_carpet_floor()
 	return 0
-/turf/proc/return_siding_icon_state()		//used for grass floors, which have siding.
+/turf/proc/return_siding_icon_state() //used for grass floors, which have siding.
 	return 0
 
 /turf/proc/inertial_drift(atom/movable/A as mob|obj)
 	if(A.anchored)
 		return
-	if(!(A.last_move_dir))	return
+	if(!(A.last_move_dir)) return
 	if((istype(A, /mob/) && src.x > 2 && src.x < (world.maxx - 1) && src.y > 2 && src.y < (world.maxy-1)))
 		var/mob/M = A
 		if(M.Process_Spacemove(1))
@@ -344,14 +353,14 @@
 	var/old_lumcount = lighting_lumcount - initial(lighting_lumcount)
 
 	//if(src.type == new_turf_path) // Put this back if shit starts breaking
-	//	return src
+	// return src
 
 	var/pylons = linked_pylons
 
 	var/list/old_baseturfs = baseturfs
 
 	changing_turf = TRUE
-	qdel(src)	//Just get the side effects and call Destroy
+	qdel(src) //Just get the side effects and call Destroy
 	var/turf/W = new path(src)
 
 	for(var/i in W.contents)
@@ -427,10 +436,10 @@
 /turf/proc/can_be_dissolved()
 	return 0
 
-/turf/proc/ceiling_debris_check(var/size = 1)
+/turf/proc/ceiling_debris_check(size = 1)
 	return
 
-/turf/proc/ceiling_debris(var/size = 1) //debris falling in response to airstrikes, etc
+/turf/proc/ceiling_debris(size = 1) //debris falling in response to airstrikes, etc
 	if(ceiling_debrised)
 		return
 
@@ -514,7 +523,7 @@
 /turf/proc/wet_floor()
 	return
 
-/turf/proc/get_cell(var/type)
+/turf/proc/get_cell(type)
 	for(var/datum/automata_cell/C in autocells)
 		if(istype(C, type))
 			return C
@@ -550,6 +559,12 @@
 
 /turf/open/jungle/is_weedable()
 	return NOT_WEEDABLE
+
+/turf/open/auto_turf/shale/layer1/is_weedable()
+	return SEMI_WEEDABLE
+
+/turf/open/auto_turf/shale/layer2/is_weedable()
+	return SEMI_WEEDABLE
 
 /turf/closed/wall/is_weedable()
 	return FULLY_WEEDABLE //so we can spawn weeds on the walls
@@ -705,10 +720,10 @@ GLOBAL_LIST_INIT(blacklisted_automated_baseturfs, typecacheof(list(
 /// Remove all atoms except observers, landmarks, docking ports - clearing up the turf contents
 /turf/proc/empty(turf_type=/turf/open/space, baseturf_type, list/ignore_typecache, flags)
 	var/static/list/ignored_atoms = typecacheof(list(/mob/dead, /obj/effect/landmark, /obj/docking_port))
-	var/list/allowed_contents = typecache_filter_list_reverse(GetAllContentsIgnoring(ignore_typecache), ignored_atoms)
-	allowed_contents -= src
-	for(var/i in 1 to allowed_contents.len)
-		var/thing = allowed_contents[i]
+	var/list/removable_contents = typecache_filter_list_reverse(GetAllContentsIgnoring(ignore_typecache), ignored_atoms)
+	removable_contents -= src
+	for(var/i in 1 to removable_contents.len)
+		var/thing = removable_contents[i]
 		qdel(thing, force=TRUE)
 
 	if(turf_type)
@@ -740,7 +755,7 @@ GLOBAL_LIST_INIT(blacklisted_automated_baseturfs, typecacheof(list(
 /turf/proc/copyTurf(turf/T)
 	if(T.type != type)
 		var/obj/O
-		if(underlays.len)	//we have underlays, which implies some sort of transparency, so we want to a snapshot of the previous turf as an underlay
+		if(underlays.len) //we have underlays, which implies some sort of transparency, so we want to a snapshot of the previous turf as an underlay
 			O = new()
 			O.underlays.Add(T)
 		T.ChangeTurf(type)
@@ -751,8 +766,8 @@ GLOBAL_LIST_INIT(blacklisted_automated_baseturfs, typecacheof(list(
 	if(T.icon != icon)
 		T.icon = icon
 	//if(color)
-	//	T.atom_colours = atom_colours.Copy()
-	//	T.update_atom_colour()
+	// T.atom_colours = atom_colours.Copy()
+	// T.update_atom_colour()
 	if(T.dir != dir)
 		T.setDir(dir)
 	return T
