@@ -46844,10 +46844,6 @@
 	tag = "icon-sterile"
 	},
 /area/almayer/hull/upper_hull/u_f_s)
-"hGB" = (
-/obj/structure/machinery/light,
-/turf/open/floor/wood/ship,
-/area/almayer/living/commandbunks)
 "hGD" = (
 /obj/effect/decal/warning_stripes{
 	icon_state = "W";
@@ -59863,11 +59859,13 @@
 /area/almayer/hull/upper_hull/u_a_s)
 "nwv" = (
 /obj/structure/surface/table/woodentable/fancy,
-/obj/item/paper{
-	pixel_x = 3;
-	pixel_y = 3
+/obj/structure/prop/UA_flag{
+	pixel_x = 7;
+	pixel_y = 12
 	},
-/obj/item/tool/lighter/zippo/gold,
+/obj/item/ashtray/bronze{
+	pixel_x = -5
+	},
 /turf/open/floor/carpet,
 /area/almayer/living/commandbunks)
 "nwz" = (
@@ -75724,6 +75722,10 @@
 	pixel_y = 5
 	},
 /obj/structure/surface/table/woodentable/fancy,
+/obj/item/tool/lighter/zippo/gold{
+	pixel_x = 7;
+	pixel_y = -1
+	},
 /turf/open/floor/wood/ship,
 /area/almayer/living/commandbunks)
 "uwv" = (
@@ -106300,7 +106302,7 @@ yev
 agc
 agc
 akp
-hGB
+alo
 agj
 aic
 aov

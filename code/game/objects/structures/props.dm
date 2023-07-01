@@ -917,3 +917,30 @@
 		M.visible_message(SPAN_DANGER("[M] slashes [src]!"), \
 		SPAN_DANGER("You slash [src]!"), null, 5, CHAT_TYPE_XENO_COMBAT)
 	return XENO_ATTACK_ACTION
+
+/obj/structure/prop/UA_flag
+	name = "\improper United Americas Flag"
+	desc = "A United Americas Flag. It fills you with pride. Or revulsion. Or nothing."
+	wrenchable = TRUE
+	icon = 'icons/obj/structures/props/props.dmi'
+	icon_state = "uaflag"
+	opacity = 0
+	density = 0
+
+/obj/structure/prop/UA_flag/bullet_act(obj/item/projectile/P, def_zone)
+	if(P.damage)
+		visible_message(SPAN_WARNING("[P] tears [src] down!"))
+		qdel(src)
+	return 0
+
+/obj/structure/prop/UA_flag/attack_hand(mob/user/)
+	visible_message(SPAN_WARNING("[usr] messes with the [src], how disrespectful"))
+	playsound(get_turf(loc), "rustle", 15, 1, 6)
+	..()
+
+/obj/structure/prop/UA_flag/attack_alien(mob/living/carbon/Xenomorph/M)
+	M.animation_attack_on(src)
+	M.visible_message(SPAN_DANGER("\The [M] slices [src] apart!"), \
+	SPAN_DANGER("You slice [src] apart!"), null, 5)
+	qdel(src)
+	return XENO_ATTACK_ACTION
